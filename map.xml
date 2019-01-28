@@ -1,0 +1,47 @@
+<map>
+	<room name="Sprite Cranberry Vault" num="0" exits="-1,-1,-1,-1,1,-1">
+		
+		<desc>
+			Where the conquistadors really wanted to go. The walls contain barrels filled with the beverage of the heavens. Go up to get ready for the game.
+		</desc>
+		
+		<item name="2L Bottle of Sprite Cranberry">
+			A crispy, refreshing Sprite Cranberry forged from the temple of LeBron James.
+		</item>
+		
+		<item name="Goblet of the Gods">
+			The golden chalice for the consumption of Sprite Cranberry.
+		</item>
+		
+	</room>
+	
+	<room name="Staples Center Home Locker Room" num="1" exits="2,-1,-1,-1,-1,0">
+		
+		<desc>
+			Where LeBron (and scrubs) gears up before every game in LA. Go north to enter the court. Down to get back to the vault.
+		</desc>
+		
+		<item name="Empty Bottle of Sprite Cranberry">
+			The glorious remains of LeBron's pre-game ritual.
+		</item>
+		
+	</room>
+	
+	<room name="Staples Center Court" num="2" exits="1,-1,-1,-1,-1,-1">
+		
+		<desc>
+			The site of greatness. LeBron and many before him have accomplished great things here. Please, witness with respect. Go south to get back to the locker room.
+		</desc>
+		
+		<item name="Basketball">
+			A standard NBA Spalding basketball used in official games. Lose this and you'll be fined 100oz of Sprite Cranberry.
+		</item>
+		
+		<item name="LeBron's Shoes">
+			The new LeBron 16's that dropped last year. Used exclusively during LeBron's warm-ups.
+		</item>
+		
+	</room>
+
+
+</map>
