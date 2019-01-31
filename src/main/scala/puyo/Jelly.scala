@@ -1,6 +1,6 @@
 package puyo
 
-class Puyo extends Blob
+class Jelly extends Blob
 {
   def x: Int = ???
   def y: Int = ???

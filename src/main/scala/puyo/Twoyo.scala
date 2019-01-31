@@ -1,5 +1,6 @@
 package puyo
 
-class Twoyo {
+class Twoyo 
+{
   
 }

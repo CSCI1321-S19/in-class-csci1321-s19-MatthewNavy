@@ -1,5 +1,7 @@
 package puyo
 
-class Board {
+class Board 
+{
+  private var blobs = List[Blob]()
   
 }
