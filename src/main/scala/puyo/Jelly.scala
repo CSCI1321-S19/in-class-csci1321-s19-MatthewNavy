@@ -1,8 +1,11 @@
 package puyo
 
-class Jelly extends Blob
+class Jelly(val x: Int, val y: Int) extends Blob
 {
-  def x: Int = ???
-  def y: Int = ???
-  def color: Int = ???
+  def color = PuyoColor.Gray
+  
+  def fall(): Jelly =
+  {
+    new Jelly(x, y+1)
+  }
 }

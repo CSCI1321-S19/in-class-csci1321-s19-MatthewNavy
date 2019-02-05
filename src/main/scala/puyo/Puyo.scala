@@ -1,8 +1,9 @@
 package puyo
 
-class Puyo extends Blob
+class Puyo(val x: Int, val y: Int, val color: PuyoColor.Value) extends Blob
 {
-  def x: Int = ???
-  def y: Int = ???
-  def color: Int = ???
+  def fall(): Puyo =
+  {
+    new Puyo(x, y+1, color)
+  }
 }
