@@ -4,6 +4,9 @@ import scalafx.application.JFXApp
 import scalafx.scene.canvas._
 import scalafx.scene.Scene
 import scalafx.animation.AnimationTimer
+import scalafx.scene.input.KeyEvent
+import scalafx.Includes._
+import scalafx.scene.input.KeyCode
 
 object Main extends JFXApp
 {
@@ -20,6 +23,18 @@ object Main extends JFXApp
       val board = new Board()
       
       content = canvas
+      
+      onKeyPressed = (ke: KeyEvent) =>
+      {
+        ke.code match
+        {
+          case KeyCode.W|KeyCode.Up => board.upPressed()
+          case KeyCode.S|KeyCode.Down => board.downPressed()
+          case KeyCode.A|KeyCode.Left => board.leftPressed()
+          case KeyCode.D|KeyCode.Right => board.rightPressed()
+          case _ =>
+        }
+      }
       
       var lastTime = -1L
       val timer: AnimationTimer = AnimationTimer(time =>

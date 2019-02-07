@@ -6,8 +6,5 @@ trait Blob
   def y: Int
   def color: PuyoColor.Value
   
-  def fall(): Blob
-  {
-    
-  }
+  def move(dx: Int, dy: Int): Blob
 }

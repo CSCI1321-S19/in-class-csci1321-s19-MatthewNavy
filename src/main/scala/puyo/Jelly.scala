@@ -4,8 +4,8 @@ class Jelly(val x: Int, val y: Int) extends Blob
 {
   def color = PuyoColor.Gray
   
-  def fall(): Jelly =
+  def move(dx: Int, dy: Int): Jelly =
   {
-    new Jelly(x, y+1)
+    new Jelly(dx, dy)
   }
 }
