@@ -10,8 +10,8 @@ import scalafx.scene.input.KeyCode
 
 object Main extends JFXApp
 {
-  val canvasWidth = 6 * Renderer.cellSize
-  val canvasHeight = 12 * Renderer.cellSize
+  val canvasWidth = Board.Width * Renderer.cellSize
+  val canvasHeight = Board.Height * Renderer.cellSize
   stage = new JFXApp.PrimaryStage
   {
     title = "Puyo"
@@ -28,10 +28,22 @@ object Main extends JFXApp
       {
         ke.code match
         {
-          case KeyCode.W|KeyCode.Up => board.upPressed()
+          //case KeyCode.W|KeyCode.Up => board.upPressed()
           case KeyCode.S|KeyCode.Down => board.downPressed()
           case KeyCode.A|KeyCode.Left => board.leftPressed()
           case KeyCode.D|KeyCode.Right => board.rightPressed()
+          case _ =>
+        }
+      }
+      
+      onKeyReleased = (ke: KeyEvent) =>
+      {
+        ke.code match
+        {
+          //case KeyCode.W|KeyCode.Up => board.upReleased()
+          case KeyCode.S|KeyCode.Down => board.downReleased()
+          case KeyCode.A|KeyCode.Left => board.leftReleased()
+          case KeyCode.D|KeyCode.Right => board.rightReleased()
           case _ =>
         }
       }

@@ -6,4 +6,9 @@ class Puyo(val x: Int, val y: Int, val color: PuyoColor.Value) extends Blob
   {
     new Puyo(x + dx, y + dy, color)
   }
+  
+  def isClear(dx: Int, dy: Int, boardClear: (Int, Int) => Boolean): Boolean =
+  {
+    x + dx >= 0 && x + dx < Board.Width && y + dy < Board.Height && boardClear(x + dx, y + dy)
+  }
 }
