@@ -20,10 +20,9 @@ object CrystalGrowth extends JFXApp
     title = "Crystals"
     scene = new Scene(1000, 1000)
     {
-      
-      
       content = new ImageView(image)
     }
   }
   
+  system.terminate()
 }
