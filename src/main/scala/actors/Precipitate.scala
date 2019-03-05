@@ -21,7 +21,7 @@ class Precipitate(width: Int, height: Int) extends Actor {
    */
   def calcNew(x: Int, y: Int): (Int, Int) = {
     val nx = x + util.Random.nextInt(3)-1
-    val ny = y + util.Random.nextInt(2) // Don't allow moving up to mke things run faster.
+    val ny = 1//y + util.Random.nextInt(2) // Don't allow moving up to mke things run faster.
     if ((nx < 0 || nx >= width || ny < 0 || ny >= height) || (nx == x && ny == y)) calcNew(x, y) else (nx, ny)
   }
 }

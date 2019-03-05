@@ -24,5 +24,5 @@ object CrystalGrowth extends JFXApp
     }
   }
   
-  system.terminate()
+  //system.terminate()
 }
