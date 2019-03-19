@@ -7,7 +7,7 @@ import scalafx.scene.paint.Color
 class Renderer(gc: GraphicsContext) {
   import Renderer._
 
-  def render(board: Board): Unit = {
+  def render(board: PassableBoard): Unit = {
     gc.fill = Color.DarkGreen
     gc.fillRect(0, 0, Main.canvasWidth, Main.canvasHeight)
 
@@ -15,12 +15,12 @@ class Renderer(gc: GraphicsContext) {
       drawBoba(blob)
     }
     if (board.drawCurrent) {
-      drawBoba(board.current.p1)
-      drawBoba(board.current.p2)
+      drawBoba(board.p1)
+      drawBoba(board.p2)
     }
   }
 
-  def drawBoba(blob: Blob): Unit = {
+  def drawBoba(blob: PassableBlob): Unit = {
     blob.color match {
       case PuyoColor.Red     => gc.fill = Color.Red
       case PuyoColor.Yellow  => gc.fill = Color.Yellow

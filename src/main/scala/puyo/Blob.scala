@@ -7,4 +7,6 @@ trait Blob
   def color: PuyoColor.Value
   
   def move(dx: Int, dy: Int): Blob
+  
+  def makePassable = PassableBlob(x, y, color)
 }
