@@ -12,7 +12,7 @@ object Server extends App
   private var boards = List[Board]()
   private val boardQueue = new LinkedBlockingQueue[Board]
   
-  val ss = new ServerSocket(4040)
+  val ss = new ServerSocket(4000)
   Future
   {
     while(true) 
@@ -28,9 +28,12 @@ object Server extends App
   var lastTime = -1L
   while(true)
   {
-    while(boardQueue.size > 0)
-    {
-      boards ::= boardQueue.take()
+    while (boardQueue.size() > 0) {
+      val board = boardQueue.take()
+      Future {
+        while (true) board.checkInput()
+      }
+      boards ::= board
     }
     val time = System.nanoTime
     if(lastTime != -1)
@@ -38,9 +41,10 @@ object Server extends App
       val delay = (time - lastTime) / 1e9
       for(board <- boards) 
       {  
-        board.update(delay)
-        val pb = board.makePassable
-        // Send info to clients
+        if (board.update(delay)) {
+          val pb = board.makePassable
+          board.sendBoardUpdate(pb)
+        }
       }
     }
     lastTime = time

@@ -4,6 +4,7 @@ import collection.mutable
 import java.net.Socket
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
+import scalafx.scene.input.KeyCode
 
 class Board(socket: Socket, in: ObjectInputStream, out: ObjectOutputStream) {
   private var _blobs = List.tabulate[Blob](6)(i => new Jelly(i, 11))
@@ -53,13 +54,33 @@ class Board(socket: Socket, in: ObjectInputStream, out: ObjectOutputStream) {
   private val offsets = List((-1, 0), (1, 0), (0, -1), (0, 1))
 
   def drawCurrent = !checkSupport
-
-  def update(delay: Double): Unit = {
+  
+  def checkInput(): Unit = {
+    in.readObject() match {
+      case KeyPressed(code) =>
+        code match {
+          case KeyCode.Up => upPressed()
+          case KeyCode.Down => downPressed()
+          case KeyCode.Left => leftPressed()
+          case KeyCode.Right => rightPressed()
+          case _ =>
+        }
+      case KeyReleased(code) =>
+        code match {
+          case KeyCode.Up => upReleased()
+          case KeyCode.Down => downReleased()
+          case KeyCode.Left => leftReleased()
+          case KeyCode.Right => rightReleased()
+          case _ =>
+        }
+    }
+}
+  def update(delay: Double): Boolean = {
     moveDelay += delay
     if (checkSupport) {
       if (moveDelay > moveInterval) {
         val fastGrid = Array.fill(Board.Width, Board.Height)(None: Option[Blob])
-        for (b <- blobs) if(b.y >= 0) fastGrid(b.x)(b.y) = Some(b)
+        for (b <- blobs; if b.y >= 0) fastGrid(b.x)(b.y) = Some(b)
         if (!dropUnsupported(fastGrid)) {
           if (!checkRemoveByColor(fastGrid)) {
             checkSupport = false
@@ -70,8 +91,10 @@ class Board(socket: Socket, in: ObjectInputStream, out: ObjectOutputStream) {
             new Puyo(2, 0, PuyoColor.random()))
         }
         moveDelay = 0.0
-      }
+        true
+      } else false
     } else {
+      var somethingMoved = false
       fallDelay += delay
       if (moveDelay > moveInterval) {
         if (leftHeld) _current = current.move(-1, 0, boardClear)
@@ -79,13 +102,16 @@ class Board(socket: Socket, in: ObjectInputStream, out: ObjectOutputStream) {
         if (downHeld) dropTwoyo()
         if (upHeld) _current = current.rotate(boardClear)
         moveDelay = 0.0
+        somethingMoved = true
       }
       if (fallDelay > fallInterval) {
         dropTwoyo()
         fallDelay = 0.0
+        somethingMoved = true
       }
+      somethingMoved
     }
-  }
+}
 
   def dropTwoyo(): Unit = {
     if (current.isClear(0, 1, boardClear)) {
@@ -97,7 +123,12 @@ class Board(socket: Socket, in: ObjectInputStream, out: ObjectOutputStream) {
     }
   }
   
-  def makePassable = PassableBoard(blobs.map(_.makePassable), drawCurrent, current.p1.makePassable, current.p2.makePassable)
+   def sendBoardUpdate(pb: PassableBoard): Unit = {
+    out.writeObject(pb)
+    }
+  
+  def makePassable: PassableBoard = PassableBoard(blobs.map(_.makePassable), drawCurrent,
+      current.p1.makePassable, current.p2.makePassable)
 
   def boardClear(x: Int, y: Int): Boolean = {
     x >= 0 && x < Board.Width && y < Board.Height && blobs.forall(b => b.x != x || b.y != y)

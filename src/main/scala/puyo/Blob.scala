@@ -8,5 +8,5 @@ trait Blob
   
   def move(dx: Int, dy: Int): Blob
   
-  def makePassable = PassableBlob(x, y, color)
+  def makePassable: PassableBlob = PassableBlob(x, y, color)
 }

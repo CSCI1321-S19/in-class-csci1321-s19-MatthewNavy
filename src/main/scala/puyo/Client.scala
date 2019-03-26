@@ -11,12 +11,16 @@ import java.net.Socket
 import scalafx.scene.control.TextInputDialog
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+import scalafx.application.Platform
+
 
 object Client extends JFXApp
 {
   val textDialog = new TextInputDialog("localhost")
   val machine = textDialog.showAndWait().getOrElse("localhost")
-  val socket = new Socket(machine, 4040)
+  val socket = new Socket(machine, 4000)
   val in = new ObjectInputStream(socket.getInputStream)
   val out = new ObjectOutputStream(socket.getOutputStream)
   
@@ -43,6 +47,14 @@ object Client extends JFXApp
         out.writeObject(KeyReleased(ke.code))
       }
       
+       Future {
+        while (true) {
+          in.readObject() match {
+            case pb: PassableBoard =>
+              Platform.runLater(renderer.render(pb))
+          }
+        }
+      }
       //renderer.render(pb)
     }
   }
