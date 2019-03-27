@@ -11,8 +11,8 @@ class Renderer(gc: GraphicsContext) {
     gc.fill = Color.DarkGreen
     gc.fillRect(0, 0, Client.canvasWidth, Client.canvasHeight)
 
-    for (blob <- board.blobs) {
-      drawBoba(blob)
+    for (boba <- board.blobs) {
+      drawBoba(boba)
     }
     if (board.drawCurrent) {
       drawBoba(board.p1)
@@ -20,16 +20,16 @@ class Renderer(gc: GraphicsContext) {
     }
   }
 
-  def drawBoba(blob: PassableBlob): Unit = {
-    blob.color match {
+  def drawBoba(boba: PassableBlob): Unit = {
+    boba.color match {
       case PuyoColor.Red     => gc.fill = Color.Red
       case PuyoColor.Yellow  => gc.fill = Color.Yellow
       case PuyoColor.Blue    => gc.fill = Color.Blue
       case PuyoColor.Green   => gc.fill = Color.Green
-      case PuyoColor.Pink => gc.fill = Color.Magenta
+      case PuyoColor.Pink    => gc.fill = Color.Magenta
       case PuyoColor.Gray    => gc.fill = Color.Gray
     }
-    gc.fillOval(blob.x * CellSize, blob.y * CellSize, CellSize, CellSize)
+    gc.fillOval(boba.x * CellSize, boba.y * CellSize, CellSize, CellSize)
   }
 }
 

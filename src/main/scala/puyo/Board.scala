@@ -1,13 +1,13 @@
 package puyo
 
 import collection.mutable
-import java.net.Socket
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
+import java.net.Socket
 import scalafx.scene.input.KeyCode
 
-class Board(socket: Socket, in: ObjectInputStream, out: ObjectOutputStream) {
-  private var _blobs = List.tabulate[Blob](6)(i => new Jelly(i, 11))
+class Board(sock: Socket, in: ObjectInputStream, out: ObjectOutputStream) {
+  private var _bobas = List.tabulate[Blob](6)(i => new Jelly(i, 11))
   private var _current = new Twoyo(
     new Puyo(2, -1, PuyoColor.random()),
     new Puyo(2, 0, PuyoColor.random()))
@@ -19,31 +19,8 @@ class Board(socket: Socket, in: ObjectInputStream, out: ObjectOutputStream) {
   private var leftHeld = false
   private var rightHeld = false
   private var checkSupport = false
-  
-  /*
-   * ke.code match
-        {
-          case KeyCode.W|KeyCode.Up => board.upPressed()
-          case KeyCode.S|KeyCode.Down => board.downPressed()
-          case KeyCode.A|KeyCode.Left => board.leftPressed()
-          case KeyCode.D|KeyCode.Right => board.rightPressed()
-          case _ =>
-        }
-   */
-  /*
-   * ke.code match
-        {
-          case KeyCode.W|KeyCode.Up => board.upReleased()
-          case KeyCode.S|KeyCode.Down => board.downReleased()
-          case KeyCode.A|KeyCode.Left => board.leftReleased()
-          case KeyCode.D|KeyCode.Right => board.rightReleased()
-          case _ =>
-        }
-   */
-  
-  
 
-  def blobs = _blobs
+  def bobas = _bobas
   def current = _current
   def next = _next
 
@@ -54,7 +31,7 @@ class Board(socket: Socket, in: ObjectInputStream, out: ObjectOutputStream) {
   private val offsets = List((-1, 0), (1, 0), (0, -1), (0, 1))
 
   def drawCurrent = !checkSupport
-  
+
   def checkInput(): Unit = {
     in.readObject() match {
       case KeyPressed(code) =>
@@ -74,13 +51,18 @@ class Board(socket: Socket, in: ObjectInputStream, out: ObjectOutputStream) {
           case _ =>
         }
     }
-}
+  }
+
+  def sendBoardUpdate(pb: PassableBoard): Unit = {
+    out.writeObject(pb)
+  }
+
   def update(delay: Double): Boolean = {
     moveDelay += delay
     if (checkSupport) {
       if (moveDelay > moveInterval) {
         val fastGrid = Array.fill(Board.Width, Board.Height)(None: Option[Blob])
-        for (b <- blobs; if b.y >= 0) fastGrid(b.x)(b.y) = Some(b)
+        for (b <- bobas; if b.y >= 0) fastGrid(b.x)(b.y) = Some(b)
         if (!dropUnsupported(fastGrid)) {
           if (!checkRemoveByColor(fastGrid)) {
             checkSupport = false
@@ -111,27 +93,25 @@ class Board(socket: Socket, in: ObjectInputStream, out: ObjectOutputStream) {
       }
       somethingMoved
     }
-}
+  }
 
   def dropTwoyo(): Unit = {
     if (current.isClear(0, 1, boardClear)) {
       _current = current.move(0, 1, boardClear)
     } else {
-      _blobs ::= current.p1
-      _blobs ::= current.p2
+      _bobas ::= current.p1
+      _bobas ::= current.p2
       checkSupport = true
     }
   }
-  
-   def sendBoardUpdate(pb: PassableBoard): Unit = {
-    out.writeObject(pb)
-    }
-  
-  def makePassable: PassableBoard = PassableBoard(blobs.map(_.makePassable), drawCurrent,
-      current.p1.makePassable, current.p2.makePassable)
+
+  def makePassable(): PassableBoard = {
+    PassableBoard(bobas.map(_.makePassable()), drawCurrent,
+      current.p1.makePassable(), current.p2.makePassable())
+  }
 
   def boardClear(x: Int, y: Int): Boolean = {
-    x >= 0 && x < Board.Width && y < Board.Height && blobs.forall(b => b.x != x || b.y != y)
+    x >= 0 && x < Board.Width && y < Board.Height && bobas.forall(b => b.x != x || b.y != y)
   }
 
   /**
@@ -140,20 +120,20 @@ class Board(socket: Socket, in: ObjectInputStream, out: ObjectOutputStream) {
    */
   private def dropUnsupported(grid: Array[Array[Option[Blob]]]): Boolean = {
     var ret = false
-    _blobs = (for (y <- Board.Height - 1 to 0 by -1; x <- 0 until Board.Width; b <- grid(x)(y)) yield {
+    _bobas = (for (y <- Board.Height - 1 to 0 by -1; x <- 0 until Board.Width; b <- grid(x)(y)) yield {
       if (y < Board.Height - 1 && grid(x)(y + 1).isEmpty) {
         ret = true
-        val newBoba = b.move(0, 1)
+        val newBlob = b.move(0, 1)
         grid(x)(y) = None
-        grid(x)(y + 1) = Some(newBoba)
-        newBoba
+        grid(x)(y + 1) = Some(newBlob)
+        newBlob
       } else b
     }).toList
     ret
   }
 
   /**
-   * Go through the board and find groups of Bobas with four of the same color touching to remove them.
+   * Go through the board and find groups of Blobs with four of the same color touching to remove them.
    * @param grid This is a 2D array of boba options. It is used to make this run faster.
    */
   private def checkRemoveByColor(grid: Array[Array[Option[Blob]]]): Boolean = {
@@ -170,7 +150,7 @@ class Board(socket: Socket, in: ObjectInputStream, out: ObjectOutputStream) {
       }
     }
     val toRemove = mutable.Set[Blob]()
-    for (b <- blobs; if !toRemove(b) && b.color != PuyoColor.Gray) {
+    for (b <- bobas; if !toRemove(b) && b.color != PuyoColor.Gray) {
       val connected = mutable.Set[Blob](b)
       getConnected(b.x, b.y, b.color, connected)
       if (connected.size >= 4) {
@@ -187,7 +167,7 @@ class Board(socket: Socket, in: ObjectInputStream, out: ObjectOutputStream) {
         }
       }
     }
-    _blobs = blobs.filter(b => !toRemove(b))
+    _bobas = bobas.filter(b => !toRemove(b))
     toRemove.nonEmpty
   }
 

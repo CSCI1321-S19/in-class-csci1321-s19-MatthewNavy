@@ -7,16 +7,13 @@ import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.util.concurrent.LinkedBlockingQueue
 
-object Server extends App
-{
+object Server extends App {
   private var boards = List[Board]()
   private val boardQueue = new LinkedBlockingQueue[Board]
-  
-  val ss = new ServerSocket(4000)
-  Future
-  {
-    while(true) 
-    {
+
+  val ss = new ServerSocket(4040)
+  Future {
+    while (true) {
       val sock = ss.accept()
       val in = new ObjectInputStream(sock.getInputStream)
       val out = new ObjectOutputStream(sock.getOutputStream)
@@ -24,10 +21,9 @@ object Server extends App
       boardQueue.put(board)
     }
   }
-  
+
   var lastTime = -1L
-  while(true)
-  {
+  while (true) {
     while (boardQueue.size() > 0) {
       val board = boardQueue.take()
       Future {
@@ -35,18 +31,17 @@ object Server extends App
       }
       boards ::= board
     }
-    val time = System.nanoTime
-    if(lastTime != -1)
-    {
+    val time = System.nanoTime()
+    if (lastTime != -1) {
       val delay = (time - lastTime) / 1e9
-      for(board <- boards) 
-      {  
+      for (board <- boards) {
         if (board.update(delay)) {
-          val pb = board.makePassable
+          val pb = board.makePassable()
           board.sendBoardUpdate(pb)
         }
       }
     }
     lastTime = time
   }
+
 }
