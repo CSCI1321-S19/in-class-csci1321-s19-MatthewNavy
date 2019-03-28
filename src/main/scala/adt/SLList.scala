@@ -31,22 +31,43 @@ class SLList[A] extends mutable.Buffer[A]
   def length: Int = _length
   def remove(n: Int): A = 
   {
-    var rover = hd
-    for(i <- 0 until n) rover = rover.next
-    val ret = rover.next.data
-    rover.next = rover.next.next
-    if(rover.next == null) tl = rover
     _length -= 1
-    ret
+    if(n == 0) 
+    {
+      val ret = hd.data
+      hd = hd.next
+      if(hd == null) tl = null
+      ret
+    }
+    else
+    {
+      var rover = hd
+      for(i <- 0 until n-1) rover = rover.next
+      if(rover.next == tl) tl = rover
+      val ret = rover.next.data
+      rover.next = rover.next.next
+      ret
+    }
   }
   def update(n: Int,newelem: A): Unit = 
   {
     var rover = hd
     for(i <- 0 until n) rover = rover.next
-    val node = new Node(newelem, rover.next)
-    rover = node
-    _length += 1
+    rover.data = newelem
   }
   
-  def iterator: Iterator[A] = ???
+  def iterator: Iterator[A] =
+  {
+    new Iterator[A]
+    {
+      var rover = hd
+      def hasNext: Boolean = rover != null
+      def next(): A =
+      {
+        val ret = rover.data
+        rover = rover.next
+        ret
+      }
+    }
+  }
 }
