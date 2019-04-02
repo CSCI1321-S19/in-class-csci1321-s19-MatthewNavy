@@ -6,13 +6,29 @@ class LinkedListQueue[A] extends MyQueue[A]
   private var front: Node[A] = null
   private var back: Node[A] = null
   
-  def dequeue(): A = ???
-  def enqueue(a: A): Unit = ???
-  def isEmpty: Boolean = ???
-  def peek: A = ???
+  def dequeue(): A =
+  {
+    val ret = front.data
+    front = front.next
+    if(front == null) back = null
+    ret
+  }
+  
+  def enqueue(a: A): Unit =
+  {
+    val n = new Node[A](a, null)
+    if(back == null) front = n
+    else back.next = n
+    back = n
+  }
+  
+  def isEmpty: Boolean = front == null
+  
+  def peek: A = front.data
+  
 }
 
 object LinkedListQueue
 {
-  private case class Node[A](data: A, next: Node[A])
+  private class Node[A](val data: A, var next: Node[A])
 }
