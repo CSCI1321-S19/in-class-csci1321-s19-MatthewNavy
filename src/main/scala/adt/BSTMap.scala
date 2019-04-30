@@ -39,6 +39,7 @@ class BSTMap[K, V](cmp: (K, K) => Boolean) extends mutable.Map[K, V]
             else
             {
               // helper goes here
+              n
             }
           }
         }
